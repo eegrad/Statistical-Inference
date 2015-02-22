@@ -1,0 +1,58 @@
+# Statistical Inference Course Project (Part 2)
+## Title: Analyze the ToothGrowth data
+### Overview
+#### In this project we use the ToothGrowth data and provide a basic summary. We also use confidence intervals and/or hypothesis tests to compare tooth growth by supp and dose and describe a colclusion.
+
+### Question 1: Load the ToothGrowth data and perform some basic exploratory data analyses.
+Loading the data and viewing a few rows
+
+```{r}
+library(datasets)
+data(ToothGrowth)
+str(ToothGrowth)
+head(ToothGrowth)
+```
+Perform some basic exploratory data analyses
+
+```{r}
+library(ggplot2)
+
+ggplot(ToothGrowth, aes(x=factor(dose), y=len, fill=factor(dose))) +
+        ggtitle("Perform Exploratory Analysis of the ToothGrowth Dataset") +
+        geom_boxplot(notch=F) +
+        facet_grid(.~supp, margins = FALSE, scales = "fixed", space = "fixed") +
+        scale_x_discrete("Dose") +   
+        scale_y_continuous("Teeth Length")
+```
+
+### Question 2: Provide a basic summary of the data.
+```{r}
+summary(ToothGrowth)
+
+table(ToothGrowth$dose, ToothGrowth$supp)
+
+```
+### Question 3: Use confidence intervals and/or hypothesis tests to compare tooth growth by supp and dose.
+
+```{r}
+hypo_test_1 <- t.test(len~supp, paired=FALSE, var.equal=TRUE, data=ToothGrowth)
+hypo_test_2 <- t.test(len~supp, paired=FALSE, var.equal=FALSE, data=ToothGrowth)
+
+hypo_test_result <- data.frame("p-value"=c(hypo_test_1$p.value, hypo_test_2$p.value),
+                          "Lower_Conf_Limit"=c(hypo_test_1$conf[1],hypo_test_2$conf[1]),
+                          "Higher_Conf_Limit"=c(hypo_test_1$conf[2],hypo_test_2$conf[2]),
+                          row.names=c("Equal Variance","Unequal Variance"))
+
+hypo_test_result
+
+```
+
+### Question 4: State your conclusions and the assumptions needed for your conclusions.
+
+1.  Orange juice and Vitamin C have different effects on tooth growth.
+
+2. Dosage is a key factor in tooth growth, regardless of the supplement methods.
+
+3. Larger dosages have greater impact on tooth growth (2 mg dosage has the highest impact on tooth growth, then 1 mg. 0.5mg dosage has the lowest impact on tooth growth.
+
+4. At a higher dosage level (2 mg), the tooth growth rate is not statistically significant for different supplement methods.
